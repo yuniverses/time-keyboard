@@ -1,0 +1,112 @@
+.slider-container {
+  display: none;
+}
+body {
+  font-family: "Montserrat Alternates";
+
+  max-width: 1200px;
+  margin: auto;
+  background-color: black;
+}
+
+#displayArea {
+  margin-top: 20px;
+  font-size: 48px;
+  font-family: "Montserrat Alternates";
+
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  border: 1px solid #ccc;
+  padding: 10px;
+  min-height: 50px;
+}
+.char {
+  display: inline-block; /* 使 margin-left 生效 */
+  transition: margin-left 0.2s ease, color 0.2s ease;
+}
+#sentMessages {
+  margin-top: 40px;
+  font-size: 48px;
+  font-family: "Montserrat Alternates";
+}
+.sent-message {
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+strong {
+  color: #ccc;
+}
+#textArea {
+  #inputArea {
+    border: 0;
+    height: 20vh;
+    width: 100%;
+    max-width: 1200px;
+    position: fixed;
+    bottom: 5vh;
+    color: rgba(240, 255, 255, 0);
+    background-color: rgb(34, 34, 34);
+    mix-blend-mode: difference;
+    font-size: 48px;
+  }
+  #displayArea {
+    border: 0;
+    height: 20vh;
+    width: 100%;
+    max-width: 1200px;
+    position: fixed;
+    bottom: 5vh;
+
+    pointer-events: none;
+  }
+}
+
+#sentMessages {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.sent-message {
+  width: 100%;
+  background: none;
+  border: none;
+  strong {
+    font-size: 10px;
+    position: absolute;
+    transform: translateY(-10px);
+  }
+}
+
+#togglecontrol {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  background-color: rgba(240, 248, 255, 0);
+}
+#slider-container {
+  border: 1px solid gray;
+  background-color: rgb(255, 255, 255);
+  z-index: 99;
+  position: absolute;
+  bottom: 60px;
+  left: 20px;
+}
+
+.typing-animation span {
+  opacity: 0;
+  display: inline-block;
+  animation: typing 0.05s forwards;
+}
+
+@keyframes typing {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

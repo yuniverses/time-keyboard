@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>打字速度調整字間距互動網頁</title>
+
+    <!-- 引入 WanaKana 庫 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Noto+Sans+TC:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.0/dist/wanakana.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <button id="togglecontrol">setting</button>
+
+    <div id="sentMessages"></div>
+
+    <!-- 滑桿控制區 -->
+    <div class="slider-container" id="slider-container">
+      <div class="slider-group">
+        <label for="minSpacing">最小字間距 (px):</label>
+        <input
+          type="range"
+          id="minSpacing"
+          min="-50"
+          max="0"
+          step="1"
+          value="-2"
+        />
+        <span id="minSpacingValue" class="slider-value">-2</span>
+      </div>
+      <div class="slider-group">
+        <label for="maxSpacing">最大字間距 (px):</label>
+        <input
+          type="range"
+          id="maxSpacing"
+          min="50"
+          max="300"
+          step="1"
+          value="150"
+        />
+        <span id="maxSpacingValue" class="slider-value">150</span>
+      </div>
+      <div class="slider-group">
+        <label for="spacingFactor">字間距比例因子:</label>
+        <input
+          type="range"
+          id="spacingFactor"
+          min="0.05"
+          max="0.2"
+          step="0.01"
+          value="0.10"
+        />
+        <span id="spacingFactorValue" class="slider-value">0.10</span>
+      </div>
+      <div class="slider-group">
+        <label for="thresholdInterval">閾值間隔 (ms):</label>
+        <input
+          type="range"
+          id="thresholdInterval"
+          min="100"
+          max="500"
+          step="10"
+          value="130"
+        />
+        <span id="thresholdIntervalValue" class="slider-value">130</span>
+      </div>
+    </div>
+
+    <!-- 切換按鈕 -->
+    <!-- <button id="toggleLanguage">切換到日文輸入</button> -->
+    <div id="textArea">
+      <div id="displayArea"></div>
+      <textarea id="inputArea" placeholder="開始打字..." autofocus></textarea>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- 引入 Socket.io 客戶端庫 -->
+    <script src="/client.js"></script>
+    <!-- 客戶端代碼 -->
+  </body>
+</html>
