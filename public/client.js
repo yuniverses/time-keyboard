@@ -250,9 +250,11 @@ inputArea.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !isComposing) {
     event.preventDefault(); // 防止預設換行行為
     sendMessage(); // 執行送出訊息
-    inputArea.blur(); // 收起鍵盤
     document.body.classList.remove("fullscreen-mode");
     window.scrollTo(0, 0);
+    if (window.innerWidth < 700) {
+      inputArea.blur();
+    }
     // 您可在這裡加入移除 fullscreen-mode 的 class 並滾動至最上方等操作
   }
 });
@@ -382,9 +384,11 @@ inputArea.addEventListener("focus", () => {
 
 sendButton.addEventListener("click", () => {
   sendMessage();
-  inputArea.blur();
   document.body.classList.remove("fullscreen-mode");
   window.scrollTo(0, 0);
+  if (window.innerWidth < 700) {
+    inputArea.blur();
+  }
 });
 
 document.addEventListener("DOMContentLoaded", function () {
