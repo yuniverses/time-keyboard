@@ -34,7 +34,19 @@ let minSpacing = parseInt(minSpacingSlider.value); // 最緊密，負值表示�
 let maxSpacing = parseInt(maxSpacingSlider.value); // 最寬松
 let spacingFactor = parseFloat(spacingFactorSlider.value); // 字間距比例因子
 let thresholdInterval = parseInt(thresholdIntervalSlider.value); // 閾值間隔（毫秒）
-
+// 新增一個 caret 元素
+const caret = document.createElement("span");
+caret.id = "caret"; // 在 input事件或發送後都要確保 caret 在最後
+function updateCaretPosition() {
+  // 確保 caret 在最後一個字元之後
+  // 如果 displayArea 有字元，則將 caret 移到最後
+  // 如果 displayArea 是空的，caret 就在 displayArea 開頭
+  if (displayArea.lastChild && displayArea.lastChild.id !== "caret") {
+    displayArea.appendChild(caret);
+  } else if (!displayArea.lastChild) {
+    displayArea.appendChild(caret);
+  }
+}
 /**
  * 更新滑桿顯示值
  */
@@ -78,7 +90,9 @@ togglecontrolBtn.addEventListener("click", () => {
  */
 window.onload = function () {
   while (!userName) {
-    userName = prompt("請輸入您的姓名:");
+    userName = prompt(
+      "あなたの名前を入力してください / Please enter your name :"
+    );
   }
 };
 
@@ -215,14 +229,12 @@ function displayMessageWithAnimation(container, messageHtml, intervals) {
 socket.on("chatMessage", (data) => {
   const messageElement = document.createElement("div");
   messageElement.classList.add("sent-message");
-  const nameElement = document.createElement("strong");
-  nameElement.textContent = `${data.name}: `;
-  messageElement.appendChild(nameElement);
-
   const messageContent = document.createElement("span");
   messageElement.appendChild(messageContent);
-
   sentMessages.appendChild(messageElement);
+  const nameElement = document.createElement("strong");
+  nameElement.textContent = `${data.name} `;
+  messageElement.appendChild(nameElement);
   sentMessages.scrollTop = sentMessages.scrollHeight; // 滾動到最底部
 
   // 使用打字動畫顯示內容，依據收到的 intervals 來模擬原本的打字節奏
@@ -236,9 +248,18 @@ socket.on("chatMessage", (data) => {
 // 處理鍵盤事件以檢測 Enter 鍵
 inputArea.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !isComposing) {
-    event.preventDefault(); // 防止換行
-    sendMessage();
+    event.preventDefault(); // 防止預設換行行為
+    sendMessage(); // 執行送出訊息
+    inputArea.blur(); // 收起鍵盤
+    document.body.classList.remove("fullscreen-mode");
+    window.scrollTo(0, 0);
+    // 您可在這裡加入移除 fullscreen-mode 的 class 並滾動至最上方等操作
   }
+});
+
+inputArea.addEventListener("click", () => {
+  updateCaretPosition();
+  inputArea.placeholder = "";
 });
 
 // 處理輸入法組合事件
@@ -338,4 +359,52 @@ inputArea.addEventListener("input", (e) => {
 
   // 更新 committedValue
   committedValue = currentValue;
+
+  updateCaretPosition();
+});
+const sendButton = document.createElement("button");
+sendButton.id = "sendButton";
+sendButton.textContent = "send";
+document.body.appendChild(sendButton);
+
+inputArea.addEventListener("focus", () => {
+  if (window.innerWidth < 700) {
+    // 進入行動版特別模式
+    inputArea.setAttribute("inputmode", "latin");
+    inputArea.placeholder =
+      "モバイル版は英語のみ入力可能 The mobile version can only input English";
+    document.body.classList.add("fullscreen-mode");
+  } else {
+    // 桌面版則不作特別限制
+    inputArea.removeAttribute("inputmode");
+  }
+});
+
+sendButton.addEventListener("click", () => {
+  sendMessage();
+  inputArea.blur();
+  document.body.classList.remove("fullscreen-mode");
+  window.scrollTo(0, 0);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.innerWidth < 700) {
+    // 進入行動版特別模式
+    inputArea.placeholder =
+      "モバイル版は英語のみ入力可能 The mobile version can only input English";
+    inputArea.setAttribute("inputmode", "latin"); // 建議顯示英文鍵盤
+    inputArea.setAttribute("pattern", "[A-Za-z]*"); // 僅允許英文字符（表單驗證用）
+    inputArea.setAttribute("enterkeyhint", "send"); // 鍵盤右下角顯示「送出」
+    inputArea.setAttribute("autocorrect", "off"); // 關閉自動更正
+    inputArea.setAttribute("autocapitalize", "none"); // 關閉自動大小寫
+    inputArea.setAttribute("spellcheck", "false"); // 關閉拼字檢查
+  } else {
+    // 桌面版則不作特別限制，移除前面設定的屬性
+    inputArea.removeAttribute("inputmode");
+    inputArea.removeAttribute("pattern");
+    inputArea.removeAttribute("enterkeyhint");
+    inputArea.removeAttribute("autocorrect");
+    inputArea.removeAttribute("autocapitalize");
+    inputArea.removeAttribute("spellcheck");
+  }
 });

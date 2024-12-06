@@ -2,7 +2,11 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
-    <title>打字速度調整字間距互動網頁</title>
+    <meta
+      name="viewport"
+      content="width=device-width,height=device-height, initial-scale=1"
+    />
+    <title>time-keyboard</title>
 
     <!-- 引入 WanaKana 庫 -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,7 +19,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <button id="togglecontrol">setting</button>
+    <button style="opacity: 0" id="togglecontrol">setting</button>
 
     <div id="sentMessages"></div>
 
@@ -75,9 +79,15 @@
     <!-- <button id="toggleLanguage">切換到日文輸入</button> -->
     <div id="textArea">
       <div id="displayArea"></div>
-      <textarea id="inputArea" placeholder="開始打字..." autofocus></textarea>
+      <textarea
+        id="inputArea"
+        placeholder="入力を開始します...  Start typing..."
+        enterkeyhint="send"
+      ></textarea>
     </div>
-
+    <a href="https://yuniverses.com/index.html" target="_blank"
+      ><img src="/img/copyright © YUNIVER ® 2024 (1126 update).svg" alt=""
+    /></a>
     <script src="/socket.io/socket.io.js"></script>
     <!-- 引入 Socket.io 客戶端庫 -->
     <script src="/client.js"></script>
