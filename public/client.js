@@ -180,6 +180,7 @@ function syncDisplayAreaAfterDelete(inputValue) {
  */
 function sendMessage() {
   const messageHtml = displayArea.innerHTML; // 取得 displayArea 的 HTML 內容
+  const messageText = committedValue; // 純文字內容，給 AI 分析
 
   if (messageHtml.trim() === "") {
     return; // 如果訊息為空，不執行
@@ -189,6 +190,7 @@ function sendMessage() {
   socket.emit("chatMessage", {
     name: userName,
     message: messageHtml,
+    text: messageText,
     intervals: charIntervals,
   });
 
@@ -212,16 +214,28 @@ function displayMessageWithAnimation(container, messageHtml, intervals) {
   container.innerHTML = ""; // 清空容器
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = messageHtml; // 將 HTML 插入到暫存元素中
-  const spans = Array.from(tempDiv.querySelectorAll("span")); // 獲取所有字符的 span
 
-  // 使用 intervals 來決定每個字元出現的時間點
+  // 依序取出節點，支援 <span> 與 <br>
+  const nodes = Array.from(tempDiv.childNodes).filter(
+    (n) => n.nodeType === 1 && (n.tagName === "SPAN" || n.tagName === "BR")
+  );
+
   let accumulatedTime = 0;
-  spans.forEach((span, index) => {
-    let interval = intervals[index] || 100; // 若無資料，預設100ms
-    accumulatedTime += interval;
-    setTimeout(() => {
-      container.appendChild(span);
-    }, accumulatedTime);
+  let iInterval = 0;
+  nodes.forEach((node) => {
+    if (node.tagName === "SPAN") {
+      const interval = intervals[iInterval] || 100; // 若無資料，預設100ms
+      iInterval += 1;
+      accumulatedTime += interval;
+      setTimeout(() => {
+        container.appendChild(node);
+      }, accumulatedTime);
+    } else if (node.tagName === "BR") {
+      // 換行不消耗 interval，於當前時間點插入
+      setTimeout(() => {
+        container.appendChild(node);
+      }, accumulatedTime);
+    }
   });
 }
 
