@@ -3,6 +3,39 @@
 const socket = io(); // 連接到服務器
 let userName = ""; // 保存用戶的姓名
 
+// // 30 秒自動重新載入功能（已註解）
+// let autoReloadTimer = null;
+//
+// // 重置自動重新載入計時器
+// function resetAutoReloadTimer() {
+//   // 清除舊的計時器
+//   if (autoReloadTimer) {
+//     clearTimeout(autoReloadTimer);
+//   }
+//   // 設置新的計時器，30 秒後重新載入
+//   autoReloadTimer = setTimeout(() => {
+//     location.reload();
+//   }, 30000); // 30000 毫秒 = 30 秒
+// }
+//
+// // 初始化計時器
+// resetAutoReloadTimer();
+
+// 每分鐘檢查一次，如果超過晚上 12 點就重新載入
+function checkMidnightReload() {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+
+  // 如果是凌晨 0 點 0 分（過了晚上 12 點），重新載入頁面
+  if (hours === 0 && minutes === 0) {
+    location.reload();
+  }
+}
+
+// 每分鐘檢查一次
+setInterval(checkMidnightReload, 60000); // 60000 毫秒 = 1 分鐘
+
 const inputArea = document.getElementById("inputArea");
 const displayArea = document.getElementById("displayArea");
 const sentMessages = document.getElementById("sentMessages");
@@ -343,6 +376,9 @@ socket.on("chatMessage", (data) => {
 
 // 處理鍵盤事件以檢測 Enter 鍵
 inputArea.addEventListener("keydown", (event) => {
+  // // 用戶按鍵，重置自動重新載入計時器（30秒功能已註解）
+  // resetAutoReloadTimer();
+
   if (event.key === "Enter" && !isComposing) {
     event.preventDefault(); // 防止預設換行行為
     sendMessage(); // 執行送出訊息
@@ -356,6 +392,9 @@ inputArea.addEventListener("keydown", (event) => {
 });
 
 inputArea.addEventListener("click", () => {
+  // // 用戶點擊輸入框，重置自動重新載入計時器（30秒功能已註解）
+  // resetAutoReloadTimer();
+
   updateCaretPosition();
   inputArea.placeholder = "";
 });
@@ -371,6 +410,9 @@ inputArea.addEventListener("compositionend", () => {
 
 // 處理輸入框事件，動態顯示輸入內容
 inputArea.addEventListener("input", (e) => {
+  // // 用戶有輸入操作，重置自動重新載入計時器（30秒功能已註解）
+  // resetAutoReloadTimer();
+
   let currentValue = inputArea.value;
 
   // 如果處於日文模式，將輸入的英文轉換為平假名
