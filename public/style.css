@@ -60,7 +60,7 @@ strong {
   mix-blend-mode: difference;
   font-size: 4em;
   z-index: 50;
-  outline-color: rgb(255, 255, 255);
+  outline: none;
 }
 #textArea #displayArea {
   border: 0;

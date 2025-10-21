@@ -86,14 +86,78 @@ togglecontrolBtn.addEventListener("click", () => {
 });
 
 /**
- * 啟動時詢問用戶姓名
+ * 為系統消息生成帶有樣式的 HTML
+ * @param {string} text - 純文字內容
+ * @returns {Object} - { html: HTML 字符串, intervals: 間隔陣列 }
+ */
+function generateStyledMessageHTML(text) {
+  let html = '';
+  let intervals = [];
+
+  // 為每個字符生成隨機的間隔（100-200ms），創造自然的打字效果
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const interval = 100 + Math.random() * 100; // 100-200ms
+    intervals.push(interval);
+
+    // 計算樣式（使用與 input 事件相同的邏輯）
+    const thresholdInterval = 130;
+    const spacingFactor = 0.10;
+    let calculatedSpacing = (interval - thresholdInterval) * spacingFactor;
+
+    // 計算 scaleX
+    let cs = Math.max(-5, Math.min(100, calculatedSpacing));
+    let t = (cs + 10) / 110;
+    let scaleX = 0.05 + (5 - 0.05) * t;
+
+    // 計算 margin-left
+    let marginLeft = -18 + scaleX * 15;
+
+    // 計算顏色
+    let cs2 = Math.max(-10, Math.min(100, calculatedSpacing));
+    let t2 = (cs2 + 90) / 200;
+    let R = Math.round(255 * (1 - t2) + 100);
+    let G = Math.round(255 * (1 - t2) + 100);
+    let B = 255;
+    let color = `rgb(${R},${G},${B})`;
+
+    // 生成 span 元素
+    html += `<span class="char" style="display: inline-block; transform-origin: left center; transform: scaleX(${scaleX}); margin-right: ${marginLeft}px; color: ${color};">${char}</span>`;
+  }
+
+  return { html, intervals };
+}
+
+/**
+ * 顯示系統消息
+ * @param {string} message - 系統消息內容
+ */
+function displaySystemMessage(message) {
+  const messageElement = document.createElement("div");
+  messageElement.classList.add("sent-message");
+  const messageContent = document.createElement("span");
+  messageElement.appendChild(messageContent);
+  const nameElement = document.createElement("strong");
+  nameElement.textContent = "SYSTEM ";
+  messageElement.appendChild(nameElement);
+  sentMessages.appendChild(messageElement);
+  sentMessages.scrollTop = sentMessages.scrollHeight;
+
+  // 生成帶有樣式的 HTML 和 intervals
+  const { html, intervals } = generateStyledMessageHTML(message);
+
+  // 使用打字動畫顯示內容
+  displayMessageWithAnimation(messageContent, html, intervals);
+}
+
+/**
+ * 啟動時顯示系統消息詢問用戶姓名
  */
 window.onload = function () {
-  while (!userName) {
-    userName = prompt(
-      "あなたの名前を入力してください / Please enter your name :"
-    );
-  }
+  // 顯示系統消息詢問名字
+  displaySystemMessage("あなたの名前は何ですか？ / What's your name?");
+  // 自動聚焦到輸入框
+  inputArea.focus();
 };
 
 /**
@@ -184,6 +248,24 @@ function sendMessage() {
 
   if (messageHtml.trim() === "") {
     return; // 如果訊息為空，不執行
+  }
+
+  // 如果用戶還沒有輸入名字，將第一次輸入作為名字
+  if (!userName) {
+    userName = messageText.trim();
+    // 顯示歡迎消息
+    displaySystemMessage(`こんにちは、${userName}さん！ / Hello, ${userName}!`);
+
+    // 清空輸入區域和顯示區域
+    inputArea.value = "";
+    displayArea.innerHTML = "";
+
+    // 重置相關變數
+    committedValue = "";
+    lastCommittedTime = null;
+    charIntervals = []; // 清空 intervals
+
+    return; // 名字設置完成後返回
   }
 
   // 發送消息到服務器，附帶用戶姓名和 intervals
